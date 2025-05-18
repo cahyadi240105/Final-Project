@@ -1,0 +1,617 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Scatterplot CPMK Mahasiswa with Details</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f5f5f5;
+        }
+        h1, h2, h3 { 
+            color: #333;
+            text-align: center; 
+        }
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .button { 
+            font-size: 14px; 
+            padding: 10px 20px; 
+            cursor: pointer; 
+            margin: 0 5px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+        }
+        .button:disabled { 
+            background-color: #ccc; 
+        }
+        .controls { 
+            margin: 20px 0; 
+            display: flex; 
+            align-items: center;
+            justify-content: center;
+        }
+        .page-info { 
+            margin-right: 15px; 
+            font-weight: bold;
+        }
+        .chart-container {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+            position: relative;
+        }
+        .conclusion {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            border-left: 5px solid #4CAF50;
+        }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        .data-table th, .data-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        .data-table th {
+            background-color: #f2f2f2;
+        }
+        .data-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .summary, .highlight, .recommendations {
+            margin-top: 20px;
+        }
+        .recommendations ul {
+            text-align: left;
+        }
+        .student-detail {
+            position: absolute;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+            z-index: 100;
+            display: none;
+        }
+        .student-detail table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .student-detail th, .student-detail td {
+            border: 1px solid #ddd;
+            padding: 5px;
+            text-align: center;
+        }
+        .student-detail th {
+            background-color: #f2f2f2;
+        }
+        .student-id {
+            cursor: pointer;
+            text-decoration: underline;
+            fill: blue;
+        }
+        .close-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            color: #777;
+        }
+        .close-btn:hover {
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Grafik Pencapaian Nilai CPMK Mahasiswa</h1>
+        
+        <div class="controls">
+            <span id="pageInfo" class="page-info">Halaman 1 dari 6</span>
+            <button id="prevBtn" class="button" onclick="changePage(-1)">Previous</button>
+            <button id="nextBtn" class="button" onclick="changePage(1)">Next</button>
+        </div>
+        
+        <div class="chart-container">
+            <svg id="chart" width="1100" height="700" style="border:1px solid #ccc; box-shadow: 0 0 5px rgba(0,0,0,0.1);">
+                <line x1='60' y1='60' x2='60' y2='640' stroke='black' stroke-width='2' /><line x1='60' y1='640' x2='1040' y2='640' stroke='black' stroke-width='2' /><text x='50' y='640.0' font-size='12' text-anchor='end'>0.0</text><text x='50' y='524.0' font-size='12' text-anchor='end'>20.0</text><text x='50' y='408.0' font-size='12' text-anchor='end'>40.0</text><text x='50' y='292.0' font-size='12' text-anchor='end'>60.0</text><text x='50' y='176.0' font-size='12' text-anchor='end'>80.0</text><text x='50' y='60.0' font-size='12' text-anchor='end'>100.0</text><line x1='60' y1='524.0' x2='1040' y2='524.0' stroke='#e0e0e0' stroke-width='1' stroke-dasharray='5,5' /><line x1='60' y1='408.0' x2='1040' y2='408.0' stroke='#e0e0e0' stroke-width='1' stroke-dasharray='5,5' /><line x1='60' y1='292.0' x2='1040' y2='292.0' stroke='#e0e0e0' stroke-width='1' stroke-dasharray='5,5' /><line x1='60' y1='176.0' x2='1040' y2='176.0' stroke='#e0e0e0' stroke-width='1' stroke-dasharray='5,5' /><line x1='60' y1='60.0' x2='1040' y2='60.0' stroke='#e0e0e0' stroke-width='1' stroke-dasharray='5,5' /><text x='80.0' y='670' 
+                            transform='rotate(0 80.0,670)' 
+                            font-size='10' class='student-id' 
+                            onclick='showStudentDetail("2101020014", 100, 90, 82, 80, 80.0, 670)'
+                            >2101020014</text><circle cx='74.0' cy='60.0' r='4' fill='red' /><circle cx='78.0' cy='118.0' r='4' fill='blue' /><circle cx='82.0' cy='164.40000000000003' r='4' fill='green' /><circle cx='86.0' cy='176.0' r='4' fill='purple' /><text x='174.0' y='670' 
+                            transform='rotate(0 174.0,670)' 
+                            font-size='10' class='student-id' 
+                            onclick='showStudentDetail("2101020024", 100, 20, 66, 71, 174.0, 670)'
+                            >2101020024</text><circle cx='168.0' cy='60.0' r='4' fill='red' /><circle cx='172.0' cy='524.0' r='4' fill='blue' /><circle cx='176.0' cy='257.2' r='4' fill='green' /><circle cx='180.0' cy='228.20000000000005' r='4' fill='purple' /><text x='268.0' y='670' 
+                            transform='rotate(0 268.0,670)' 
+                            font-size='10' class='student-id' 
+                            onclick='showStudentDetail("2101020048", 100, 90, 89, 73, 268.0, 670)'
+                            >2101020048</text><circle cx='262.0' cy='60.0' r='4' fill='red' /><circle cx='266.0' cy='118.0' r='4' fill='blue' /><circle cx='270.0' cy='123.79999999999995' r='4' fill='green' /><circle cx='274.0' cy='216.60000000000002' r='4' fill='purple' /><text x='362.0' y='670' 
+                            transform='rotate(0 362.0,670)' 
+                            font-size='10' class='student-id' 
+                            onclick='showStudentDetail("2101020058", 100, 90, 83, 80, 362.0, 670)'
+                            >2101020058</text><circle cx='356.0' cy='60.0' r='4' fill='red' /><circle cx='360.0' cy='118.0' r='4' fill='blue' /><circle cx='364.0' cy='158.60000000000002' r='4' fill='green' /><circle cx='368.0' cy='176.0' r='4' fill='purple' /><text x='456.0' y='670' 
+                            transform='rotate(0 456.0,670)' 
+                            font-size='10' class='student-id' 
+                            onclick='showStudentDetail("2101020074", 90, 60, 73, 64, 456.0, 670)'
+                            >2101020074</text><circle cx='450.0' cy='118.0' r='4' fill='red' /><circle cx='454.0' cy='292.0' r='4' fill='blue' /><circle cx='458.0' cy='216.60000000000002' r='4' fill='green' /><circle cx='462.0' cy='268.8' r='4' fill='purple' /><text x='550.0' y='670' 
+                            transform='rotate(0 550.0,670)' 
+                            font-size='10' class='student-id' 
+                            onclick='showStudentDetail("2101020092", 100, 20, 71, 56, 550.0, 670)'
+                            >2101020092</text><circle cx='544.0' cy='60.0' r='4' fill='red' /><circle cx='548.0' cy='524.0' r='4' fill='blue' /><circle cx='552.0' cy='228.20000000000005' r='4' fill='green' /><circle cx='556.0' cy='315.2' r='4' fill='purple' /><text x='644.0' y='670' 
+                            transform='rotate(0 644.0,670)' 
+                            font-size='10' class='student-id' 
+                            onclick='showStudentDetail("2101020103", 0, 0, 7.1, 15, 644.0, 670)'
+                            >2101020103</text><circle cx='638.0' cy='640.0' r='4' fill='red' /><circle cx='642.0' cy='640.0' r='4' fill='blue' /><circle cx='646.0' cy='598.82' r='4' fill='green' /><circle cx='650.0' cy='553.0' r='4' fill='purple' /><text x='738.0' y='670' 
+                            transform='rotate(0 738.0,670)' 
+                            font-size='10' class='student-id' 
+                            onclick='showStudentDetail("2101020104", 90, 60, 64, 64, 738.0, 670)'
+                            >2101020104</text><circle cx='732.0' cy='118.0' r='4' fill='red' /><circle cx='736.0' cy='292.0' r='4' fill='blue' /><circle cx='740.0' cy='268.8' r='4' fill='green' /><circle cx='744.0' cy='268.8' r='4' fill='purple' /><text x='832.0' y='670' 
+                            transform='rotate(0 832.0,670)' 
+                            font-size='10' class='student-id' 
+                            onclick='showStudentDetail("2101020117", 90, 60, 71, 64, 832.0, 670)'
+                            >2101020117</text><circle cx='826.0' cy='118.0' r='4' fill='red' /><circle cx='830.0' cy='292.0' r='4' fill='blue' /><circle cx='834.0' cy='228.20000000000005' r='4' fill='green' /><circle cx='838.0' cy='268.8' r='4' fill='purple' /><text x='926.0' y='670' 
+                            transform='rotate(0 926.0,670)' 
+                            font-size='10' class='student-id' 
+                            onclick='showStudentDetail("2201020001", 100, 60, 76, 58, 926.0, 670)'
+                            >2201020001</text><circle cx='920.0' cy='60.0' r='4' fill='red' /><circle cx='924.0' cy='292.0' r='4' fill='blue' /><circle cx='928.0' cy='199.2' r='4' fill='green' /><circle cx='932.0' cy='303.6' r='4' fill='purple' /><text x='550.0' y='30' text-anchor='middle' font-size='16' font-weight='bold'>Pencapaian Nilai CPMK Mahasiswa</text><text x='550.0' y='690' text-anchor='middle' font-size='12'>ID Mahasiswa (klik untuk detail)</text><text x='20' y='350.0' text-anchor='middle' font-size='12' transform='rotate(-90,20,350.0)'>Rentang Nilai</text><rect x='950' y='60' width='15' height='15' fill='red' /><text x='970' y='72' font-size='12'>CPMK012</text><rect x='950' y='85' width='15' height='15' fill='blue' /><text x='970' y='97' font-size='12'>CPMK031</text><rect x='950' y='110' width='15' height='15' fill='green' /><text x='970' y='122' font-size='12'>CPMK071</text><rect x='950' y='135' width='15' height='15' fill='purple' /><text x='970' y='147' font-size='12'>CPMK072</text><text x='60' y='40' font-size='12'>Halaman 1 dari 6</text>
+            </svg>
+            <div id="studentDetail" class="student-detail">
+                <span class="close-btn" onclick="hideStudentDetail()">×</span>
+                <h3 id="studentIdTitle">Detail Mahasiswa</h3>
+                <table>
+                    <tr>
+                        <th>CPMK</th>
+                        <th>Nilai</th>
+                        <th>Status</th>
+                    </tr>
+                    <tr id="cpmk012Row">
+                        <td>CPMK012</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr id="cpmk031Row">
+                        <td>CPMK031</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr id="cpmk071Row">
+                        <td>CPMK071</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    <tr id="cpmk072Row">
+                        <td>CPMK072</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                </table>
+                <p id="studentAvg"></p>
+            </div>
+        </div>
+        
+        
+<div class="conclusion">
+    <h2>Kesimpulan Analisis Data</h2>
+    
+    <div class="summary">
+        <h3>Rata-rata Pencapaian CPMK</h3>
+        <table class="data-table">
+            <tr>
+                <th>CPMK</th>
+                <th>Rata-rata</th>
+                <th>Status</th>
+                <th>Mahasiswa di Atas Rata-rata</th>
+            </tr>
+            <tr>
+                <td>CPMK012</td>
+                <td>94.72</td>
+                <td>Sangat Baik</td>
+                <td>43 (81.1%)</td>
+            </tr>
+            <tr>
+                <td>CPMK031</td>
+                <td>65.96</td>
+                <td>Cukup</td>
+                <td>35 (66.0%)</td>
+            </tr>
+            <tr>
+                <td>CPMK071</td>
+                <td>78.80</td>
+                <td>Baik</td>
+                <td>31 (58.5%)</td>
+            </tr>
+            <tr>
+                <td>CPMK072</td>
+                <td>63.58</td>
+                <td>Cukup</td>
+                <td>33 (62.3%)</td>
+            </tr>
+        </table>
+    </div>
+    
+    <div class="highlight">
+        <h3>Pencapaian Tertinggi dan Terendah</h3>
+        <table class="data-table">
+            <tr>
+                <th>CPMK</th>
+                <th>Nilai Tertinggi</th>
+            </tr>
+            <tr>
+                <td>CPMK012</td>
+                <td>100</td>
+            </tr>
+            <tr>
+                <td>CPMK031</td>
+                <td>90</td>
+            </tr>
+            <tr>
+                <td>CPMK071</td>
+                <td>101</td>
+           </tr>
+            <tr>
+                <td>CPMK072</td>
+                <td>84</td>
+            </tr>
+        </table>
+    </div>
+    
+    <div class="recommendations">
+        <h3>Rekomendasi Pengembangan</h3>
+        <ul>
+            <li>CPMK031 memiliki nilai rata-rata 65.96 yang cukup. Perlu adanya perhatian khusus untuk peningkatan pencapaian pada CPMK ini.</li>
+            <li>Terdapat 10 mahasiswa yang berada di bawah rata-rata pada CPMK012 (nilai di bawah 94.72).</li>
+            <li>Pada CPMK071 dan CPMK072, sekitar 58.5% mahasiswa telah mencapai nilai di atas rata-rata.</li>
+        </ul>
+    </div>
+</div>
+
+    </div>
+    
+    <script>
+        // Data SVG untuk semua halaman dalam bentuk array JavaScript
+        const allSvgs = [
+            `<line x1='60' y1='60' x2='60' y2='640' stroke='black' stroke-width='2' /><line x1='60' y1='640' x2='1040' y2='640' stroke='black' stroke-width='2' /><text x='50' y='640.0' font-size='12' text-anchor='end'>0.0</text><text x='50' y='524.0' font-size='12' text-anchor='end'>20.0</text><text x='50' y='408.0' font-size='12' text-anchor='end'>40.0</text><text x='50' y='292.0' font-size='12' text-anchor='end'>60.0</text><text x='50' y='176.0' font-size='12' text-anchor='end'>80.0</text><text x='50' y='60.0' font-size='12' text-anchor='end'>100.0</text><line x1='60' y1='524.0' x2='1040' y2='524.0' stroke='#e0e0e0' stroke-width='1' stroke-dasharray='5,5' /><line x1='60' y1='408.0' x2='1040' y2='408.0' stroke='#e0e0e0' stroke-width='1' stroke-dasharray='5,5' /><line x1='60' y1='292.0' x2='1040' y2='292.0' stroke='#e0e0e0' stroke-width='1' stroke-dasharray='5,5' /><line x1='60' y1='176.0' x2='1040' y2='176.0' stroke='#e0e0e0' stroke-width='1' stroke-dasharray='5,5' /><line x1='60' y1='60.0' x2='1040' y2='60.0' stroke='#e0e0e0' stroke-width='1' stroke-dasharray='5,5' /><text x='80.0' y='670' 
+                            transform='rotate(0 80.0,670)' 
+                            font-size='10' class='student-id' 
+                            onclick='showStudentDetail("2101020014", 100, 90, 82, 80, 80.0, 670)'
+                            >2101020014</text><circle cx='74.0' cy='60.0' r='4' fill='red' /><circle cx='78.0' cy='118.0' r='4' fill='blue' /><circle cx='82.0' cy='164.40000000000003' r='4' fill='green' /><circle cx='86.0' cy='176.0' r='4' fill='purple' /><text x='174.0' y='670' 
+                            transform='rotate(0 174.0,670)' 
+                            font-size='10' class='student-id' 
+                            onclick='showStudentDetail("2101020024", 100, 20, 66, 71, 174.0, 670)'
+                            >2101020024</text><circle cx='168.0' cy='60.0' r='4' fill='red' /><circle cx='172.0' cy='524.0' r='4' fill='blue' /><circle cx='176.0' cy='257.2' r='4' fill='green' /><circle cx='180.0' cy='228.20000000000005' r='4' fill='purple' /><text x='268.0' y='670' 
+                            transform='rotate(0 268.0,670)' 
+                            font-size='10' class='student-id' 
+                            onclick='showStudentDetail("2101020048", 100, 90, 89, 73, 268.0, 670)'
+                            >2101020048</text><circle cx='262.0' cy='60.0' r='4' fill='red' /><circle cx='266.0' cy='118.0' r='4' fill='blue' /><circle cx='270.0' cy='123.79999999999995' r='4' fill='green' /><circle cx='274.0' cy='216.60000000000002' r='4' fill='purple' /><text x='362.0' y='670' 
+                            transform='rotate(0 362.0,670)' 
+                            font-size='10' class='student-id' 
+                            onclick='showStudentDetail("2101020058", 100, 90, 83, 80, 362.0, 670)'
+                            >2101020058</text><circle cx='356.0' cy='60.0' r='4' fill='red' /><circle cx='360.0' cy='118.0' r='4' fill='blue' /><circle cx='364.0' cy='158.60000000000002' r='4' fill='green' /><circle cx='368.0' cy='176.0' r='4' fill='purple' /><text x='456.0' y='670' 
+                            transform='rotate(0 456.0,670)' 
+                            font-size='10' class='student-id' 
+                            onclick='showStudentDetail("2101020074", 90, 60, 73, 64, 456.0, 670)'
+                            >2101020074</text><circle cx='450.0' cy='118.0' r='4' fill='red' /><circle cx='454.0' cy='292.0' r='4' fill='blue' /><circle cx='458.0' cy='216.60000000000002' r='4' fill='green' /><circle cx='462.0' cy='268.8' r='4' fill='purple' /><text x='550.0' y='670' 
+                            transform='rotate(0 550.0,670)' 
+                            font-size='10' class='student-id' 
+                            onclick='showStudentDetail("2101020092", 100, 20, 71, 56, 550.0, 670)'
+                            >2101020092</text><circle cx='544.0' cy='60.0' r='4' fill='red' /><circle cx='548.0' cy='524.0' r='4' fill='blue' /><circle cx='552.0' cy='228.20000000000005' r='4' fill='green' /><circle cx='556.0' cy='315.2' r='4' fill='purple' /><text x='644.0' y='670' 
+                            transform='rotate(0 644.0,670)' 
+                            font-size='10' class='student-id' 
+                            onclick='showStudentDetail("2101020103", 0, 0, 7.1, 15, 644.0, 670)'
+                            >2101020103</text><circle cx='638.0' cy='640.0' r='4' fill='red' /><circle cx='642.0' cy='640.0' r='4' fill='blue' /><circle cx='646.0' cy='598.82' r='4' fill='green' /><circle cx='650.0' cy='553.0' r='4' fill='purple' /><text x='738.0' y='670' 
+                            transform='rotate(0 738.0,670)' 
+                            font-size='10' class='student-id' 
+                            onclick='showStudentDetail("2101020104", 90, 60, 64, 64, 738.0, 670)'
+                            >2101020104</text><circle cx='732.0' cy='118.0' r='4' fill='red' /><circle cx='736.0' cy='292.0' r='4' fill='blue' /><circle cx='740.0' cy='268.8' r='4' fill='green' /><circle cx='744.0' cy='268.8' r='4' fill='purple' /><text x='832.0' y='670' 
+                            transform='rotate(0 832.0,670)' 
+                            font-size='10' class='student-id' 
+                            onclick='showStudentDetail("2101020117", 90, 60, 71, 64, 832.0, 670)'
+                            >2101020117</text><circle cx='826.0' cy='118.0' r='4' fill='red' /><circle cx='830.0' cy='292.0' r='4' fill='blue' /><circle cx='834.0' cy='228.20000000000005' r='4' fill='green' /><circle cx='838.0' cy='268.8' r='4' fill='purple' /><text x='926.0' y='670' 
+                            transform='rotate(0 926.0,670)' 
+                            font-size='10' class='student-id' 
+                            onclick='showStudentDetail("2201020001", 100, 60, 76, 58, 926.0, 670)'
+                            >2201020001</text><circle cx='920.0' cy='60.0' r='4' fill='red' /><circle cx='924.0' cy='292.0' r='4' fill='blue' /><circle cx='928.0' cy='199.2' r='4' fill='green' /><circle cx='932.0' cy='303.6' r='4' fill='purple' /><text x='550.0' y='30' text-anchor='middle' font-size='16' font-weight='bold'>Pencapaian Nilai CPMK Mahasiswa</text><text x='550.0' y='690' text-anchor='middle' font-size='12'>ID Mahasiswa (klik untuk detail)</text><text x='20' y='350.0' text-anchor='middle' font-size='12' transform='rotate(-90,20,350.0)'>Rentang Nilai</text><rect x='950' y='60' width='15' height='15' fill='red' /><text x='970' y='72' font-size='12'>CPMK012</text><rect x='950' y='85' width='15' height='15' fill='blue' /><text x='970' y='97' font-size='12'>CPMK031</text><rect x='950' y='110' width='15' height='15' fill='green' /><text x='970' y='122' font-size='12'>CPMK071</text><rect x='950' y='135' width='15' height='15' fill='purple' /><text x='970' y='147' font-size='12'>CPMK072</text><text x='60' y='40' font-size='12'>Halaman 1 dari 6</text>`,`<line x1='60' y1='60' x2='60' y2='640' stroke='black' stroke-width='2' /><line x1='60' y1='640' x2='1040' y2='640' stroke='black' stroke-width='2' /><text x='50' y='640.0' font-size='12' text-anchor='end'>20.0</text><text x='50' y='524.0' font-size='12' text-anchor='end'>36.0</text><text x='50' y='408.0' font-size='12' text-anchor='end'>52.0</text><text x='50' y='292.0' font-size='12' text-anchor='end'>68.0</text><text x='50' y='176.0' font-size='12' text-anchor='end'>84.0</text><text x='50' y='60.0' font-size='12' text-anchor='end'>100.0</text><line x1='60' y1='524.0' x2='1040' y2='524.0' stroke='#e0e0e0' stroke-width='1' stroke-dasharray='5,5' /><line x1='60' y1='408.0' x2='1040' y2='408.0' stroke='#e0e0e0' stroke-width='1' stroke-dasharray='5,5' /><line x1='60' y1='292.0' x2='1040' y2='292.0' stroke='#e0e0e0' stroke-width='1' stroke-dasharray='5,5' /><line x1='60' y1='176.0' x2='1040' y2='176.0' stroke='#e0e0e0' stroke-width='1' stroke-dasharray='5,5' /><line x1='60' y1='60.0' x2='1040' y2='60.0' stroke='#e0e0e0' stroke-width='1' stroke-dasharray='5,5' /><text x='80.0' y='670' 
+                            transform='rotate(0 80.0,670)' 
+                            font-size='10' class='student-id' 
+                            onclick='showStudentDetail("2201020002", 100, 80, 84, 71, 80.0, 670)'
+                            >2201020002</text><circle cx='74.0' cy='60.0' r='4' fill='red' /><circle cx='78.0' cy='205.0' r='4' fill='blue' /><circle cx='82.0' cy='176.0' r='4' fill='green' /><circle cx='86.0' cy='270.25' r='4' fill='purple' /><text x='174.0' y='670' 
+                            transform='rotate(0 174.0,670)' 
+                            font-size='10' class='student-id' 
+                            onclick='showStudentDetail("2201020010", 100, 80, 94, 82, 174.0, 670)'
+                            >2201020010</text><circle cx='168.0' cy='60.0' r='4' fill='red' /><circle cx='172.0' cy='205.0' r='4' fill='blue' /><circle cx='176.0' cy='103.5' r='4' fill='green' /><circle cx='180.0' cy='190.5' r='4' fill='purple' /><text x='268.0' y='670' 
+                            transform='rotate(0 268.0,670)' 
+                            font-size='10' class='student-id' 
+                            onclick='showStudentDetail("2201020014", 100, 60, 83, 65, 268.0, 670)'
+                            >2201020014</text><circle cx='262.0' cy='60.0' r='4' fill='red' /><circle cx='266.0' cy='350.0' r='4' fill='blue' /><circle cx='270.0' cy='183.25' r='4' fill='green' /><circle cx='274.0' cy='313.75' r='4' fill='purple' /><text x='362.0' y='670' 
+                            transform='rotate(0 362.0,670)' 
+                            font-size='10' class='student-id' 
+                            onclick='showStudentDetail("2201020015", 100, 60, 80, 58, 362.0, 670)'
+                            >2201020015</text><circle cx='356.0' cy='60.0' r='4' fill='red' /><circle cx='360.0' cy='350.0' r='4' fill='blue' /><circle cx='364.0' cy='205.0' r='4' fill='green' /><circle cx='368.0' cy='364.5' r='4' fill='purple' /><text x='456.0' y='670' 
+                            transform='rotate(0 456.0,670)' 
+                            font-size='10' class='student-id' 
+                            onclick='showStudentDetail("2201020018", 100, 70, 86, 80, 456.0, 670)'
+                            >2201020018</text><circle cx='450.0' cy='60.0' r='4' fill='red' /><circle cx='454.0' cy='277.5' r='4' fill='blue' /><circle cx='458.0' cy='161.5' r='4' fill='green' /><circle cx='462.0' cy='205.0' r='4' fill='purple' /><text x='550.0' y='670' 
+                            transform='rotate(0 550.0,670)' 
+                            font-size='10' class='student-id' 
+                            onclick='showStudentDetail("2201020019", 100, 80, 93, 75, 550.0, 670)'
+                            >2201020019</text><circle cx='544.0' cy='60.0' r='4' fill='red' /><circle cx='548.0' cy='205.0' r='4' fill='blue' /><circle cx='552.0' cy='110.75' r='4' fill='green' /><circle cx='556.0' cy='241.25' r='4' fill='purple' /><text x='644.0' y='670' 
+                            transform='rotate(0 644.0,670)' 
+                            font-size='10' class='student-id' 
+                            onclick='showStudentDetail("2201020022", 90, 20, 75, 45, 644.0, 670)'
+                            >2201020022</text><circle cx='638.0' cy='132.5' r='4' fill='red' /><circle cx='642.0' cy='640.0' r='4' fill='blue' /><circle cx='646.0' cy='241.25' r='4' fill='green' /><circle cx='650.0' cy='458.75' r='4' fill='purple' /><text x='738.0' y='670' 
+                            transform='rotate(0 738.0,670)' 
+                            font-size='10' class='student-id' 
+                            onclick='showStudentDetail("2201020026", 100, 80, 84, 71, 738.0, 670)'
+                            >2201020026</text><circle cx='732.0' cy='60.0' r='4' fill='red' /><circle cx='736.0' cy='205.0' r='4' fill='blue' /><circle cx='740.0' cy='176.0' r='4' fill='green' /><circle cx='744.0' cy='270.25' r='4' fill='purple' /><text x='832.0' y='670' 
+                            transform='rotate(0 832.0,670)' 
+                            font-size='10' class='student-id' 
+                            onclick='showStudentDetail("2201020032", 100, 80, 85, 67, 832.0, 670)'
+                            >2201020032</text><circle cx='826.0' cy='60.0' r='4' fill='red' /><circle cx='830.0' cy='205.0' r='4' fill='blue' /><circle cx='834.0' cy='168.75' r='4' fill='green' /><circle cx='838.0' cy='299.25' r='4' fill='purple' /><text x='926.0' y='670' 
+                            transform='rotate(0 926.0,670)' 
+                            font-size='10' class='student-id' 
+                            onclick='showStudentDetail("2201020039", 100, 80, 82, 56, 926.0, 670)'
+                            >2201020039</text><circle cx='920.0' cy='60.0' r='4' fill='red' /><circle cx='924.0' cy='205.0' r='4' fill='blue' /><circle cx='928.0' cy='190.5' r='4' fill='green' /><circle cx='932.0' cy='379.0' r='4' fill='purple' /><text x='550.0' y='30' text-anchor='middle' font-size='16' font-weight='bold'>Pencapaian Nilai CPMK Mahasiswa</text><text x='550.0' y='690' text-anchor='middle' font-size='12'>ID Mahasiswa (klik untuk detail)</text><text x='20' y='350.0' text-anchor='middle' font-size='12' transform='rotate(-90,20,350.0)'>Rentang Nilai</text><rect x='950' y='60' width='15' height='15' fill='red' /><text x='970' y='72' font-size='12'>CPMK012</text><rect x='950' y='85' width='15' height='15' fill='blue' /><text x='970' y='97' font-size='12'>CPMK031</text><rect x='950' y='110' width='15' height='15' fill='green' /><text x='970' y='122' font-size='12'>CPMK071</text><rect x='950' y='135' width='15' height='15' fill='purple' /><text x='970' y='147' font-size='12'>CPMK072</text><text x='60' y='40' font-size='12'>Halaman 2 dari 6</text>`,`<line x1='60' y1='60' x2='60' y2='640' stroke='black' stroke-width='2' /><line x1='60' y1='640' x2='1040' y2='640' stroke='black' stroke-width='2' /><text x='50' y='640.0' font-size='12' text-anchor='end'>45.0</text><text x='50' y='524.0' font-size='12' text-anchor='end'>56.0</text><text x='50' y='408.0' font-size='12' text-anchor='end'>67.0</text><text x='50' y='292.0' font-size='12' text-anchor='end'>78.0</text><text x='50' y='176.0' font-size='12' text-anchor='end'>89.0</text><text x='50' y='60.0' font-size='12' text-anchor='end'>100.0</text><line x1='60' y1='524.0' x2='1040' y2='524.0' stroke='#e0e0e0' stroke-width='1' stroke-dasharray='5,5' /><line x1='60' y1='408.0' x2='1040' y2='408.0' stroke='#e0e0e0' stroke-width='1' stroke-dasharray='5,5' /><line x1='60' y1='292.0' x2='1040' y2='292.0' stroke='#e0e0e0' stroke-width='1' stroke-dasharray='5,5' /><line x1='60' y1='176.0' x2='1040' y2='176.0' stroke='#e0e0e0' stroke-width='1' stroke-dasharray='5,5' /><line x1='60' y1='60.0' x2='1040' y2='60.0' stroke='#e0e0e0' stroke-width='1' stroke-dasharray='5,5' /><text x='80.0' y='670' 
+                            transform='rotate(0 80.0,670)' 
+                            font-size='10' class='student-id' 
+                            onclick='showStudentDetail("2201020041", 100, 80, 93, 75, 80.0, 670)'
+                            >2201020041</text><circle cx='74.0' cy='60.0' r='4' fill='red' /><circle cx='78.0' cy='270.90909090909093' r='4' fill='blue' /><circle cx='82.0' cy='133.81818181818187' r='4' fill='green' /><circle cx='86.0' cy='323.6363636363637' r='4' fill='purple' /><text x='174.0' y='670' 
+                            transform='rotate(0 174.0,670)' 
+                            font-size='10' class='student-id' 
+                            onclick='showStudentDetail("2201020047", 100, 75, 64, 45, 174.0, 670)'
+                            >2201020047</text><circle cx='168.0' cy='60.0' r='4' fill='red' /><circle cx='172.0' cy='323.6363636363637' r='4' fill='blue' /><circle cx='176.0' cy='439.6363636363636' r='4' fill='green' /><circle cx='180.0' cy='640.0' r='4' fill='purple' /><text x='268.0' y='670' 
+                            transform='rotate(0 268.0,670)' 
+                            font-size='10' class='student-id' 
+                            onclick='showStudentDetail("2201020048", 100, 70, 99, 80, 268.0, 670)'
+                            >2201020048</text><circle cx='262.0' cy='60.0' r='4' fill='red' /><circle cx='266.0' cy='376.3636363636364' r='4' fill='blue' /><circle cx='270.0' cy='70.5454545454545' r='4' fill='green' /><circle cx='274.0' cy='270.90909090909093' r='4' fill='purple' /><text x='362.0' y='670' 
+                            transform='rotate(0 362.0,670)' 
+                            font-size='10' class='student-id' 
+                            onclick='showStudentDetail("2201020057", 100, 75, 72, 45, 362.0, 670)'
+                            >2201020057</text><circle cx='356.0' cy='60.0' r='4' fill='red' /><circle cx='360.0' cy='323.6363636363637' r='4' fill='blue' /><circle cx='364.0' cy='355.27272727272725' r='4' fill='green' /><circle cx='368.0' cy='640.0' r='4' fill='purple' /><text x='456.0' y='670' 
+                            transform='rotate(0 456.0,670)' 
+                            font-size='10' class='student-id' 
+                            onclick='showStudentDetail("2201020063", 100, 76, 94, 80, 456.0, 670)'
+                            >2201020063</text><circle cx='450.0' cy='60.0' r='4' fill='red' /><circle cx='454.0' cy='313.0909090909091' r='4' fill='blue' /><circle cx='458.0' cy='123.27272727272725' r='4' fill='green' /><circle cx='462.0' cy='270.90909090909093' r='4' fill='purple' /><text x='550.0' y='670' 
+                            transform='rotate(0 550.0,670)' 
+                            font-size='10' class='student-id' 
+                            onclick='showStudentDetail("2201020065", 100, 75, 89, 75, 550.0, 670)'
+                            >2201020065</text><circle cx='544.0' cy='60.0' r='4' fill='red' /><circle cx='548.0' cy='323.6363636363637' r='4' fill='blue' /><circle cx='552.0' cy='176.0' r='4' fill='green' /><circle cx='556.0' cy='323.6363636363637' r='4' fill='purple' /><text x='644.0' y='670' 
+                            transform='rotate(0 644.0,670)' 
+                            font-size='10' class='student-id' 
+                            onclick='showStudentDetail("2201020066", 100, 60, 72, 53, 644.0, 670)'
+                            >2201020066</text><circle cx='638.0' cy='60.0' r='4' fill='red' /><circle cx='642.0' cy='481.81818181818187' r='4' fill='blue' /><circle cx='646.0' cy='355.27272727272725' r='4' fill='green' /><circle cx='650.0' cy='555.6363636363636' r='4' fill='purple' /><text x='738.0' y='670' 
+                            transform='rotate(0 738.0,670)' 
+                            font-size='10' class='student-id' 
+                            onclick='showStudentDetail("2201020067", 100, 80, 92, 67, 738.0, 670)'
+                            >2201020067</text><circle cx='732.0' cy='60.0' r='4' fill='red' /><circle cx='736.0' cy='270.90909090909093' r='4' fill='blue' /><circle cx='740.0' cy='144.36363636363637' r='4' fill='green' /><circle cx='744.0' cy='408.0' r='4' fill='purple' /><text x='832.0' y='670' 
+                            transform='rotate(0 832.0,670)' 
+                            font-size='10' class='student-id' 
+                            onclick='showStudentDetail("2201020070", 100, 75, 94, 84, 832.0, 670)'
+                            >2201020070</text><circle cx='826.0' cy='60.0' r='4' fill='red' /><circle cx='830.0' cy='323.6363636363637' r='4' fill='blue' /><circle cx='834.0' cy='123.27272727272725' r='4' fill='green' /><circle cx='838.0' cy='228.7272727272727' r='4' fill='purple' /><text x='926.0' y='670' 
+                            transform='rotate(0 926.0,670)' 
+                            font-size='10' class='student-id' 
+                            onclick='showStudentDetail("2201020074", 100, 60, 62, 53, 926.0, 670)'
+                            >2201020074</text><circle cx='920.0' cy='60.0' r='4' fill='red' /><circle cx='924.0' cy='481.81818181818187' r='4' fill='blue' /><circle cx='928.0' cy='460.72727272727275' r='4' fill='green' /><circle cx='932.0' cy='555.6363636363636' r='4' fill='purple' /><text x='550.0' y='30' text-anchor='middle' font-size='16' font-weight='bold'>Pencapaian Nilai CPMK Mahasiswa</text><text x='550.0' y='690' text-anchor='middle' font-size='12'>ID Mahasiswa (klik untuk detail)</text><text x='20' y='350.0' text-anchor='middle' font-size='12' transform='rotate(-90,20,350.0)'>Rentang Nilai</text><rect x='950' y='60' width='15' height='15' fill='red' /><text x='970' y='72' font-size='12'>CPMK012</text><rect x='950' y='85' width='15' height='15' fill='blue' /><text x='970' y='97' font-size='12'>CPMK031</text><rect x='950' y='110' width='15' height='15' fill='green' /><text x='970' y='122' font-size='12'>CPMK071</text><rect x='950' y='135' width='15' height='15' fill='purple' /><text x='970' y='147' font-size='12'>CPMK072</text><text x='60' y='40' font-size='12'>Halaman 3 dari 6</text>`,`<line x1='60' y1='60' x2='60' y2='640' stroke='black' stroke-width='2' /><line x1='60' y1='640' x2='1040' y2='640' stroke='black' stroke-width='2' /><text x='50' y='640.0' font-size='12' text-anchor='end'>0.0</text><text x='50' y='524.0' font-size='12' text-anchor='end'>20.0</text><text x='50' y='408.0' font-size='12' text-anchor='end'>40.0</text><text x='50' y='292.0' font-size='12' text-anchor='end'>60.0</text><text x='50' y='176.0' font-size='12' text-anchor='end'>80.0</text><text x='50' y='60.0' font-size='12' text-anchor='end'>100.0</text><line x1='60' y1='524.0' x2='1040' y2='524.0' stroke='#e0e0e0' stroke-width='1' stroke-dasharray='5,5' /><line x1='60' y1='408.0' x2='1040' y2='408.0' stroke='#e0e0e0' stroke-width='1' stroke-dasharray='5,5' /><line x1='60' y1='292.0' x2='1040' y2='292.0' stroke='#e0e0e0' stroke-width='1' stroke-dasharray='5,5' /><line x1='60' y1='176.0' x2='1040' y2='176.0' stroke='#e0e0e0' stroke-width='1' stroke-dasharray='5,5' /><line x1='60' y1='60.0' x2='1040' y2='60.0' stroke='#e0e0e0' stroke-width='1' stroke-dasharray='5,5' /><text x='80.0' y='670' 
+                            transform='rotate(0 80.0,670)' 
+                            font-size='10' class='student-id' 
+                            onclick='showStudentDetail("2201020075", 100, 80, 92, 75, 80.0, 670)'
+                            >2201020075</text><circle cx='74.0' cy='60.0' r='4' fill='red' /><circle cx='78.0' cy='176.0' r='4' fill='blue' /><circle cx='82.0' cy='106.39999999999998' r='4' fill='green' /><circle cx='86.0' cy='205.0' r='4' fill='purple' /><text x='174.0' y='670' 
+                            transform='rotate(0 174.0,670)' 
+                            font-size='10' class='student-id' 
+                            onclick='showStudentDetail("2201020083", 100, 80, 88, 75, 174.0, 670)'
+                            >2201020083</text><circle cx='168.0' cy='60.0' r='4' fill='red' /><circle cx='172.0' cy='176.0' r='4' fill='blue' /><circle cx='176.0' cy='129.60000000000002' r='4' fill='green' /><circle cx='180.0' cy='205.0' r='4' fill='purple' /><text x='268.0' y='670' 
+                            transform='rotate(0 268.0,670)' 
+                            font-size='10' class='student-id' 
+                            onclick='showStudentDetail("2201020086", 0, 0, 7.1, 0, 268.0, 670)'
+                            >2201020086</text><circle cx='262.0' cy='640.0' r='4' fill='red' /><circle cx='266.0' cy='640.0' r='4' fill='blue' /><circle cx='270.0' cy='598.82' r='4' fill='green' /><circle cx='274.0' cy='640.0' r='4' fill='purple' /><text x='362.0' y='670' 
+                            transform='rotate(0 362.0,670)' 
+                            font-size='10' class='student-id' 
+                            onclick='showStudentDetail("2201020090", 100, 75, 97, 80, 362.0, 670)'
+                            >2201020090</text><circle cx='356.0' cy='60.0' r='4' fill='red' /><circle cx='360.0' cy='205.0' r='4' fill='blue' /><circle cx='364.0' cy='77.39999999999998' r='4' fill='green' /><circle cx='368.0' cy='176.0' r='4' fill='purple' /><text x='456.0' y='670' 
+                            transform='rotate(0 456.0,670)' 
+                            font-size='10' class='student-id' 
+                            onclick='showStudentDetail("2201020091", 100, 80, 87, 75, 456.0, 670)'
+                            >2201020091</text><circle cx='450.0' cy='60.0' r='4' fill='red' /><circle cx='454.0' cy='176.0' r='4' fill='blue' /><circle cx='458.0' cy='135.39999999999998' r='4' fill='green' /><circle cx='462.0' cy='205.0' r='4' fill='purple' /><text x='550.0' y='670' 
+                            transform='rotate(0 550.0,670)' 
+                            font-size='10' class='student-id' 
+                            onclick='showStudentDetail("2201020092", 100, 60, 76, 53, 550.0, 670)'
+                            >2201020092</text><circle cx='544.0' cy='60.0' r='4' fill='red' /><circle cx='548.0' cy='292.0' r='4' fill='blue' /><circle cx='552.0' cy='199.2' r='4' fill='green' /><circle cx='556.0' cy='332.59999999999997' r='4' fill='purple' /><text x='644.0' y='670' 
+                            transform='rotate(0 644.0,670)' 
+                            font-size='10' class='student-id' 
+                            onclick='showStudentDetail("2201020093", 100, 75, 86, 72, 644.0, 670)'
+                            >2201020093</text><circle cx='638.0' cy='60.0' r='4' fill='red' /><circle cx='642.0' cy='205.0' r='4' fill='blue' /><circle cx='646.0' cy='141.2' r='4' fill='green' /><circle cx='650.0' cy='222.40000000000003' r='4' fill='purple' /><text x='738.0' y='670' 
+                            transform='rotate(0 738.0,670)' 
+                            font-size='10' class='student-id' 
+                            onclick='showStudentDetail("2201020094", 100, 80, 92, 67, 738.0, 670)'
+                            >2201020094</text><circle cx='732.0' cy='60.0' r='4' fill='red' /><circle cx='736.0' cy='176.0' r='4' fill='blue' /><circle cx='740.0' cy='106.39999999999998' r='4' fill='green' /><circle cx='744.0' cy='251.39999999999998' r='4' fill='purple' /><text x='832.0' y='670' 
+                            transform='rotate(0 832.0,670)' 
+                            font-size='10' class='student-id' 
+                            onclick='showStudentDetail("2201020095", 100, 75, 87, 72, 832.0, 670)'
+                            >2201020095</text><circle cx='826.0' cy='60.0' r='4' fill='red' /><circle cx='830.0' cy='205.0' r='4' fill='blue' /><circle cx='834.0' cy='135.39999999999998' r='4' fill='green' /><circle cx='838.0' cy='222.40000000000003' r='4' fill='purple' /><text x='926.0' y='670' 
+                            transform='rotate(0 926.0,670)' 
+                            font-size='10' class='student-id' 
+                            onclick='showStudentDetail("2201020098", 100, 75, 69, 60, 926.0, 670)'
+                            >2201020098</text><circle cx='920.0' cy='60.0' r='4' fill='red' /><circle cx='924.0' cy='205.0' r='4' fill='blue' /><circle cx='928.0' cy='239.8' r='4' fill='green' /><circle cx='932.0' cy='292.0' r='4' fill='purple' /><text x='550.0' y='30' text-anchor='middle' font-size='16' font-weight='bold'>Pencapaian Nilai CPMK Mahasiswa</text><text x='550.0' y='690' text-anchor='middle' font-size='12'>ID Mahasiswa (klik untuk detail)</text><text x='20' y='350.0' text-anchor='middle' font-size='12' transform='rotate(-90,20,350.0)'>Rentang Nilai</text><rect x='950' y='60' width='15' height='15' fill='red' /><text x='970' y='72' font-size='12'>CPMK012</text><rect x='950' y='85' width='15' height='15' fill='blue' /><text x='970' y='97' font-size='12'>CPMK031</text><rect x='950' y='110' width='15' height='15' fill='green' /><text x='970' y='122' font-size='12'>CPMK071</text><rect x='950' y='135' width='15' height='15' fill='purple' /><text x='970' y='147' font-size='12'>CPMK072</text><text x='60' y='40' font-size='12'>Halaman 4 dari 6</text>`,`<line x1='60' y1='60' x2='60' y2='640' stroke='black' stroke-width='2' /><line x1='60' y1='640' x2='1040' y2='640' stroke='black' stroke-width='2' /><text x='50' y='640.0' font-size='12' text-anchor='end'>40.0</text><text x='50' y='524.0' font-size='12' text-anchor='end'>52.2</text><text x='50' y='408.0' font-size='12' text-anchor='end'>64.4</text><text x='50' y='292.0' font-size='12' text-anchor='end'>76.6</text><text x='50' y='176.0' font-size='12' text-anchor='end'>88.8</text><text x='50' y='60.0' font-size='12' text-anchor='end'>101.0</text><line x1='60' y1='524.0' x2='1040' y2='524.0' stroke='#e0e0e0' stroke-width='1' stroke-dasharray='5,5' /><line x1='60' y1='408.0' x2='1040' y2='408.0' stroke='#e0e0e0' stroke-width='1' stroke-dasharray='5,5' /><line x1='60' y1='292.0' x2='1040' y2='292.0' stroke='#e0e0e0' stroke-width='1' stroke-dasharray='5,5' /><line x1='60' y1='176.0' x2='1040' y2='176.0' stroke='#e0e0e0' stroke-width='1' stroke-dasharray='5,5' /><line x1='60' y1='60.0' x2='1040' y2='60.0' stroke='#e0e0e0' stroke-width='1' stroke-dasharray='5,5' /><text x='80.0' y='670' 
+                            transform='rotate(0 80.0,670)' 
+                            font-size='10' class='student-id' 
+                            onclick='showStudentDetail("2201020099", 100, 80, 93, 82, 80.0, 670)'
+                            >2201020099</text><circle cx='74.0' cy='69.50819672131149' r='4' fill='red' /><circle cx='78.0' cy='259.672131147541' r='4' fill='blue' /><circle cx='82.0' cy='136.06557377049182' r='4' fill='green' /><circle cx='86.0' cy='240.65573770491807' r='4' fill='purple' /><text x='174.0' y='670' 
+                            transform='rotate(0 174.0,670)' 
+                            font-size='10' class='student-id' 
+                            onclick='showStudentDetail("2201020100", 100, 80, 86, 64, 174.0, 670)'
+                            >2201020100</text><circle cx='168.0' cy='69.50819672131149' r='4' fill='red' /><circle cx='172.0' cy='259.672131147541' r='4' fill='blue' /><circle cx='176.0' cy='202.62295081967216' r='4' fill='green' /><circle cx='180.0' cy='411.8032786885246' r='4' fill='purple' /><text x='268.0' y='670' 
+                            transform='rotate(0 268.0,670)' 
+                            font-size='10' class='student-id' 
+                            onclick='showStudentDetail("2201020103", 100, 70, 101, 80, 268.0, 670)'
+                            >2201020103</text><circle cx='262.0' cy='69.50819672131149' r='4' fill='red' /><circle cx='266.0' cy='354.75409836065575' r='4' fill='blue' /><circle cx='270.0' cy='60.0' r='4' fill='green' /><circle cx='274.0' cy='259.672131147541' r='4' fill='purple' /><text x='362.0' y='670' 
+                            transform='rotate(0 362.0,670)' 
+                            font-size='10' class='student-id' 
+                            onclick='showStudentDetail("2201020104", 100, 80, 86, 64, 362.0, 670)'
+                            >2201020104</text><circle cx='356.0' cy='69.50819672131149' r='4' fill='red' /><circle cx='360.0' cy='259.672131147541' r='4' fill='blue' /><circle cx='364.0' cy='202.62295081967216' r='4' fill='green' /><circle cx='368.0' cy='411.8032786885246' r='4' fill='purple' /><text x='456.0' y='670' 
+                            transform='rotate(0 456.0,670)' 
+                            font-size='10' class='student-id' 
+                            onclick='showStudentDetail("2201020105", 100, 70, 76, 60, 456.0, 670)'
+                            >2201020105</text><circle cx='450.0' cy='69.50819672131149' r='4' fill='red' /><circle cx='454.0' cy='354.75409836065575' r='4' fill='blue' /><circle cx='458.0' cy='297.7049180327869' r='4' fill='green' /><circle cx='462.0' cy='449.8360655737705' r='4' fill='purple' /><text x='550.0' y='670' 
+                            transform='rotate(0 550.0,670)' 
+                            font-size='10' class='student-id' 
+                            onclick='showStudentDetail("2201020106", 90, 50, 67, 47, 550.0, 670)'
+                            >2201020106</text><circle cx='544.0' cy='164.59016393442624' r='4' fill='red' /><circle cx='548.0' cy='544.9180327868853' r='4' fill='blue' /><circle cx='552.0' cy='383.27868852459017' r='4' fill='green' /><circle cx='556.0' cy='573.4426229508197' r='4' fill='purple' /><text x='644.0' y='670' 
+                            transform='rotate(0 644.0,670)' 
+                            font-size='10' class='student-id' 
+                            onclick='showStudentDetail("2201020109", 100, 80, 86, 64, 644.0, 670)'
+                            >2201020109</text><circle cx='638.0' cy='69.50819672131149' r='4' fill='red' /><circle cx='642.0' cy='259.672131147541' r='4' fill='blue' /><circle cx='646.0' cy='202.62295081967216' r='4' fill='green' /><circle cx='650.0' cy='411.8032786885246' r='4' fill='purple' /><text x='738.0' y='670' 
+                            transform='rotate(0 738.0,670)' 
+                            font-size='10' class='student-id' 
+                            onclick='showStudentDetail("2201020112", 90, 50, 69, 47, 738.0, 670)'
+                            >2201020112</text><circle cx='732.0' cy='164.59016393442624' r='4' fill='red' /><circle cx='736.0' cy='544.9180327868853' r='4' fill='blue' /><circle cx='740.0' cy='364.26229508196724' r='4' fill='green' /><circle cx='744.0' cy='573.4426229508197' r='4' fill='purple' /><text x='832.0' y='670' 
+                            transform='rotate(0 832.0,670)' 
+                            font-size='10' class='student-id' 
+                            onclick='showStudentDetail("2201020116", 90, 50, 66, 40, 832.0, 670)'
+                            >2201020116</text><circle cx='826.0' cy='164.59016393442624' r='4' fill='red' /><circle cx='830.0' cy='544.9180327868853' r='4' fill='blue' /><circle cx='834.0' cy='392.78688524590166' r='4' fill='green' /><circle cx='838.0' cy='640.0' r='4' fill='purple' /><text x='926.0' y='670' 
+                            transform='rotate(0 926.0,670)' 
+                            font-size='10' class='student-id' 
+                            onclick='showStudentDetail("2201020117", 100, 70, 73, 53, 926.0, 670)'
+                            >2201020117</text><circle cx='920.0' cy='69.50819672131149' r='4' fill='red' /><circle cx='924.0' cy='354.75409836065575' r='4' fill='blue' /><circle cx='928.0' cy='326.22950819672127' r='4' fill='green' /><circle cx='932.0' cy='516.3934426229508' r='4' fill='purple' /><text x='550.0' y='30' text-anchor='middle' font-size='16' font-weight='bold'>Pencapaian Nilai CPMK Mahasiswa</text><text x='550.0' y='690' text-anchor='middle' font-size='12'>ID Mahasiswa (klik untuk detail)</text><text x='20' y='350.0' text-anchor='middle' font-size='12' transform='rotate(-90,20,350.0)'>Rentang Nilai</text><rect x='950' y='60' width='15' height='15' fill='red' /><text x='970' y='72' font-size='12'>CPMK012</text><rect x='950' y='85' width='15' height='15' fill='blue' /><text x='970' y='97' font-size='12'>CPMK031</text><rect x='950' y='110' width='15' height='15' fill='green' /><text x='970' y='122' font-size='12'>CPMK071</text><rect x='950' y='135' width='15' height='15' fill='purple' /><text x='970' y='147' font-size='12'>CPMK072</text><text x='60' y='40' font-size='12'>Halaman 5 dari 6</text>`,`<line x1='60' y1='60' x2='60' y2='640' stroke='black' stroke-width='2' /><line x1='60' y1='640' x2='1040' y2='640' stroke='black' stroke-width='2' /><text x='50' y='640.0' font-size='12' text-anchor='end'>20.0</text><text x='50' y='524.0' font-size='12' text-anchor='end'>36.0</text><text x='50' y='408.0' font-size='12' text-anchor='end'>52.0</text><text x='50' y='292.0' font-size='12' text-anchor='end'>68.0</text><text x='50' y='176.0' font-size='12' text-anchor='end'>84.0</text><text x='50' y='60.0' font-size='12' text-anchor='end'>100.0</text><line x1='60' y1='524.0' x2='1040' y2='524.0' stroke='#e0e0e0' stroke-width='1' stroke-dasharray='5,5' /><line x1='60' y1='408.0' x2='1040' y2='408.0' stroke='#e0e0e0' stroke-width='1' stroke-dasharray='5,5' /><line x1='60' y1='292.0' x2='1040' y2='292.0' stroke='#e0e0e0' stroke-width='1' stroke-dasharray='5,5' /><line x1='60' y1='176.0' x2='1040' y2='176.0' stroke='#e0e0e0' stroke-width='1' stroke-dasharray='5,5' /><line x1='60' y1='60.0' x2='1040' y2='60.0' stroke='#e0e0e0' stroke-width='1' stroke-dasharray='5,5' /><text x='80.0' y='670' 
+                            transform='rotate(0 80.0,670)' 
+                            font-size='10' class='student-id' 
+                            onclick='showStudentDetail("2201020118", 100, 80, 92, 82, 80.0, 670)'
+                            >2201020118</text><circle cx='74.0' cy='60.0' r='4' fill='red' /><circle cx='78.0' cy='205.0' r='4' fill='blue' /><circle cx='82.0' cy='118.0' r='4' fill='green' /><circle cx='86.0' cy='190.5' r='4' fill='purple' /><text x='393.3333333333333' y='670' 
+                            transform='rotate(0 393.3333333333333,670)' 
+                            font-size='10' class='student-id' 
+                            onclick='showStudentDetail("2201020122", 100, 70, 71, 53, 393.3333333333333, 670)'
+                            >2201020122</text><circle cx='387.3333333333333' cy='60.0' r='4' fill='red' /><circle cx='391.3333333333333' cy='277.5' r='4' fill='blue' /><circle cx='395.3333333333333' cy='270.25' r='4' fill='green' /><circle cx='399.3333333333333' cy='400.75' r='4' fill='purple' /><text x='706.6666666666666' y='670' 
+                            transform='rotate(0 706.6666666666666,670)' 
+                            font-size='10' class='student-id' 
+                            onclick='showStudentDetail("2201020123", 90, 20, 70, 53, 706.6666666666666, 670)'
+                            >2201020123</text><circle cx='700.6666666666666' cy='132.5' r='4' fill='red' /><circle cx='704.6666666666666' cy='640.0' r='4' fill='blue' /><circle cx='708.6666666666666' cy='277.5' r='4' fill='green' /><circle cx='712.6666666666666' cy='400.75' r='4' fill='purple' /><text x='550.0' y='30' text-anchor='middle' font-size='16' font-weight='bold'>Pencapaian Nilai CPMK Mahasiswa</text><text x='550.0' y='690' text-anchor='middle' font-size='12'>ID Mahasiswa (klik untuk detail)</text><text x='20' y='350.0' text-anchor='middle' font-size='12' transform='rotate(-90,20,350.0)'>Rentang Nilai</text><rect x='950' y='60' width='15' height='15' fill='red' /><text x='970' y='72' font-size='12'>CPMK012</text><rect x='950' y='85' width='15' height='15' fill='blue' /><text x='970' y='97' font-size='12'>CPMK031</text><rect x='950' y='110' width='15' height='15' fill='green' /><text x='970' y='122' font-size='12'>CPMK071</text><rect x='950' y='135' width='15' height='15' fill='purple' /><text x='970' y='147' font-size='12'>CPMK072</text><text x='60' y='40' font-size='12'>Halaman 6 dari 6</text>`
+        ];
+        
+        // Data mahasiswa
+        const studentData = [["2101020014", 100, 90, 82, 80], ["2101020024", 100, 20, 66, 71], ["2101020048", 100, 90, 89, 73], ["2101020058", 100, 90, 83, 80], ["2101020074", 90, 60, 73, 64], ["2101020092", 100, 20, 71, 56], ["2101020103", 0, 0, 7.1, 15], ["2101020104", 90, 60, 64, 64], ["2101020117", 90, 60, 71, 64], ["2201020001", 100, 60, 76, 58], ["2201020002", 100, 80, 84, 71], ["2201020010", 100, 80, 94, 82], ["2201020014", 100, 60, 83, 65], ["2201020015", 100, 60, 80, 58], ["2201020018", 100, 70, 86, 80], ["2201020019", 100, 80, 93, 75], ["2201020022", 90, 20, 75, 45], ["2201020026", 100, 80, 84, 71], ["2201020032", 100, 80, 85, 67], ["2201020039", 100, 80, 82, 56], ["2201020041", 100, 80, 93, 75], ["2201020047", 100, 75, 64, 45], ["2201020048", 100, 70, 99, 80], ["2201020057", 100, 75, 72, 45], ["2201020063", 100, 76, 94, 80], ["2201020065", 100, 75, 89, 75], ["2201020066", 100, 60, 72, 53], ["2201020067", 100, 80, 92, 67], ["2201020070", 100, 75, 94, 84], ["2201020074", 100, 60, 62, 53], ["2201020075", 100, 80, 92, 75], ["2201020083", 100, 80, 88, 75], ["2201020086", 0, 0, 7.1, 0], ["2201020090", 100, 75, 97, 80], ["2201020091", 100, 80, 87, 75], ["2201020092", 100, 60, 76, 53], ["2201020093", 100, 75, 86, 72], ["2201020094", 100, 80, 92, 67], ["2201020095", 100, 75, 87, 72], ["2201020098", 100, 75, 69, 60], ["2201020099", 100, 80, 93, 82], ["2201020100", 100, 80, 86, 64], ["2201020103", 100, 70, 101, 80], ["2201020104", 100, 80, 86, 64], ["2201020105", 100, 70, 76, 60], ["2201020106", 90, 50, 67, 47], ["2201020109", 100, 80, 86, 64], ["2201020112", 90, 50, 69, 47], ["2201020116", 90, 50, 66, 40], ["2201020117", 100, 70, 73, 53], ["2201020118", 100, 80, 92, 82], ["2201020122", 100, 70, 71, 53], ["2201020123", 90, 20, 70, 53]];
+        
+        let currentPage = 0;
+        const totalPages = 6;
+        const svgElement = document.getElementById('chart');
+        const pageInfoElement = document.getElementById('pageInfo');
+        const studentDetailElement = document.getElementById('studentDetail');
+
+        function changePage(direction) {
+            currentPage += direction;
+            if (currentPage < 0) currentPage = 0;
+            if (currentPage >= totalPages) currentPage = totalPages - 1;
+            
+            // Perbarui SVG dengan konten halaman yang sesuai
+            svgElement.innerHTML = allSvgs[currentPage];
+            
+            // Sembunyikan detail mahasiswa saat pindah halaman
+            hideStudentDetail();
+            
+            // Perbarui status dan info halaman
+            updateButtonState();
+            pageInfoElement.textContent = `Halaman ${currentPage + 1} dari ${totalPages}`;
+        }
+
+        function updateButtonState() {
+            document.getElementById('prevBtn').disabled = currentPage === 0;
+            document.getElementById('nextBtn').disabled = currentPage === totalPages - 1;
+        }
+
+        function getStatusFromValue(value) {
+            if (value >= 80) return "Sangat Baik";
+            if (value >= 70) return "Baik";
+            if (value >= 60) return "Cukup";
+            if (value > 0) return "Perlu Perbaikan";
+            return "Tidak Mengikuti";
+        }
+
+        function getStatusColor(status) {
+            switch(status) {
+                case "Sangat Baik": return "#4CAF50";
+                case "Baik": return "#2196F3";
+                case "Cukup": return "#FF9800";
+                case "Perlu Perbaikan": return "#F44336";
+                default: return "#9E9E9E";
+            }
+        }
+
+        function showStudentDetail(studentId, cpmk012, cpmk031, cpmk071, cpmk072, x, y) {
+            // Set judul
+            document.getElementById('studentIdTitle').textContent = `Detail Mahasiswa: ${studentId}`;
+            
+            // Set nilai CPMK
+            const cpmkValues = [cpmk012, cpmk031, cpmk071, cpmk072];
+            const cpmkRows = ['cpmk012Row', 'cpmk031Row', 'cpmk071Row', 'cpmk072Row'];
+            
+            for (let i = 0; i < 4; i++) {
+                const row = document.getElementById(cpmkRows[i]);
+                const cells = row.getElementsByTagName('td');
+                const value = cpmkValues[i];
+                const status = getStatusFromValue(value);
+                
+                cells[1].textContent = value;
+                cells[2].textContent = status;
+                cells[2].style.color = getStatusColor(status);
+            }
+            
+            // Hitung rata-rata
+            const validValues = cpmkValues.filter(val => val > 0);
+            const avg = validValues.length > 0 ? 
+                validValues.reduce((sum, val) => sum + val, 0) / validValues.length : 0;
+            
+            document.getElementById('studentAvg').textContent = 
+                `Rata-rata: ${avg.toFixed(2)} (${getStatusFromValue(avg)})`;
+            
+            // Posisikan dan tampilkan detail
+            const detailElement = document.getElementById('studentDetail');
+            
+            // Posisikan di dekat ID mahasiswa
+            const chartRect = svgElement.getBoundingClientRect();
+            const containerRect = document.querySelector('.chart-container').getBoundingClientRect();
+            
+            const leftPosition = x - detailElement.offsetWidth / 2;
+            const topPosition = y - detailElement.offsetHeight - 10;
+            
+            detailElement.style.left = `${Math.max(0, Math.min(chartRect.width - detailElement.offsetWidth, leftPosition))}px`;
+            detailElement.style.top = `${Math.max(0, topPosition)}px`;
+            detailElement.style.display = 'block';
+        }
+
+        function hideStudentDetail() {
+            document.getElementById('studentDetail').style.display = 'none';
+        }
+
+        // Initial button state
+        updateButtonState();
+        
+        // Close detail when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('#studentDetail') && 
+                !event.target.classList.contains('student-id')) {
+                hideStudentDetail();
+            }
+        });
+    </script>
+</body>
+</html>
